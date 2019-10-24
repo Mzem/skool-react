@@ -7,21 +7,28 @@ import axios from 'axios';
 
 export function BeerOfTheDay() 
 {
-  const [beer, setBeer] = useState();
+  const [beers, setBeers] = useState([]);
 
   useEffect(() => 
   {
-    axios.get('https://api.punkapi.com/v2/beers/random')
-      .then(beer => {
-        console.log(beer);
+    axios.get('https://api.punkapi.com/v2/beers/?page=1&per_page=5')
+      .then(beers => {
+        console.log(beers);
 
+        let newBeerList = [];
         
-        let newBeer = {
-          name: beer.data[0].name,
-          image: beer.data[0].image_url
-        };
+        beers.data.forEach(beer => 
+          {
+          let newBeer = {
+            name: beer.name,
+            image: beer.image_url
+          };
 
-        setBeer(newBeer)
+          newBeerList.push(newBeer)
+        });
+        
+
+        setBeers(newBeerList)
       })
 
       .catch(err => {
@@ -31,11 +38,18 @@ export function BeerOfTheDay()
 
   return (
     <div className="App">
-      <h1>Bierre du jour</h1>
-      {beer ? (<p>{beer.name}</p>) : "rien"}
+      <h1>Bières du jour</h1>
 
-      <img src={(beer && beer.image) && beer.image} alt="a beer pic"></img>
-      
+      <div className="beers">
+      <ul>
+        {beers.map(beer => (
+          <li key={beer.name}>
+            <h2>{beer.name}</h2>
+            <img src={beer.image} alt="a beer pic"></img>
+          </li>
+        ))}
+      </ul>
+      </div>
 
     </div>
   );
